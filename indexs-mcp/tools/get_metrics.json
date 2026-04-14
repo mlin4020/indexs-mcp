@@ -1,6 +1,8 @@
 {
   "name": "get_metrics",
   "description": "获取指标平台的指标数据",
+  "api_endpoint": "/v1/metrics",
+  "method": "POST",
   "parameters": {
     "type": "object",
     "properties": {
