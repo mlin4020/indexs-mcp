@@ -7,7 +7,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - SPRING_PROFILES_ACTIVE=prod
     volumes:
       - ./config.json:/app/config.json:ro
       - ./tools:/app/tools:ro
+      - ./src/main/resources/application.yml:/app/application.yml:ro
+
