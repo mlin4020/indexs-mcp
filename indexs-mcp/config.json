@@ -1,7 +1,0 @@
-{
-  "api_base_url": "https://api.example.com/metrics",
-  "timeout": 30,
-  "headers": {
-    "Content-Type": "application/json"
-  }
-}
