@@ -1,4 +1,4 @@
-# 远程MCP服务部署指南（Java版本）
+# 远程MCP服务部署指南（Spring AI MCP版本）
 
 ## 前置条件
 
@@ -13,16 +13,12 @@ indexs-mcp/
 ├── pom.xml                              # Maven配置文件
 ├── Dockerfile                           # Docker构建文件
 ├── docker-compose.yml                   # Docker Compose配置
-├── config.json                          # 配置文件（可选，用于外部配置）
-├── tools/                               # 工具定义目录
-│   └── get_metrics.json                # 示例工具定义
+├── tools/                               # 工具定义目录（Spring AI MCP会自动生成）
 └── src/main/
     ├── java/com/indexs/mcp/
     │   ├── McpServerApplication.java   # 主应用类
-    │   ├── config/                      # 配置类
-    │   ├── controller/                  # 控制器
-    │   ├── model/                       # 数据模型
     │   └── service/                     # 业务逻辑
+    │       └── MetricsTool.java        # 指标查询工具实现
     └── resources/
         └── application.yml              # Spring Boot配置
 ```
@@ -43,9 +39,6 @@ indexs-mcp/
    mcp:
      server:
        api-base-url: https://your-metrics-api.com
-       timeout: 30
-       headers:
-         Content-Type: application/json
    ```
 
 3. **构建项目**
@@ -150,24 +143,17 @@ sudo certbot --nginx -d your-mcp-domain.com
 
 ### 添加新工具
 
-1. 在 `tools/` 目录中创建新的工具定义 JSON 文件
-2. 工具定义格式：
-   ```json
-   {
-     "name": "tool_name",
-     "description": "工具描述",
-     "api_endpoint": "/api/endpoint",
-     "method": "POST",
-     "parameters": {
-       "type": "object",
-       "properties": {
-         "param1": {
-           "type": "string",
-           "description": "参数描述"
-         }
-       },
-       "required": ["param1"]
-     }
+1. 在 `src/main/java/com/indexs/mcp/service/` 目录中创建新的工具类
+2. 使用 `@McpTool` 注解标记方法，例如：
+   ```java
+   @Component
+   public class YourTool {
+       
+       @McpTool(name = "tool_name", description = "工具描述")
+       public Map<String, Object> toolMethod(String param1, int param2) {
+           // 实现工具逻辑
+           return Map.of("result", "success");
+       }
    }
    ```
 
@@ -177,6 +163,13 @@ sudo certbot --nginx -d your-mcp-domain.com
 2. 克隆项目到本地
 3. 修改 `application.yml` 配置
 4. 运行 `McpServerApplication` 主类
+
+## 技术特点
+
+- **基于 Spring AI MCP**：使用 Spring 官方的 MCP 实现，提供更规范的工具注册和调用机制
+- **自动工具发现**：通过 `@McpTool` 注解自动发现和注册工具
+- **简化配置**：使用 Spring Boot 配置文件统一管理配置
+- **标准 REST 接口**：提供符合 MCP 规范的 REST 接口
 
 ## 常见问题
 
@@ -193,11 +186,11 @@ sudo certbot --nginx -d your-mcp-domain.com
 ### Agent 无法调用 MCP 服务
 - 确保反向代理配置正确
 - 检查防火墙设置，确保端口可以访问
-- 验证工具定义 JSON 文件格式正确
+- 验证工具方法的参数和返回值类型
 
 ### Maven 构建失败
 - 确保 Maven 版本兼容
-- 检查网络连接，确保可以下载依赖
+- 检查网络连接，确保可以下载 Spring AI 依赖
 - 尝试清理 Maven 缓存：`mvn clean`
 
 ## 更新服务
