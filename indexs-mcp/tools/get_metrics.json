@@ -1,0 +1,26 @@
+{
+  "name": "get_metrics",
+  "description": "获取指标平台的指标数据",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "metric_id": {
+        "type": "string",
+        "description": "指标ID"
+      },
+      "start_time": {
+        "type": "string",
+        "description": "开始时间，格式为ISO 8601"
+      },
+      "end_time": {
+        "type": "string",
+        "description": "结束时间，格式为ISO 8601"
+      },
+      "filters": {
+        "type": "object",
+        "description": "过滤条件"
+      }
+    },
+    "required": ["metric_id", "start_time", "end_time"]
+  }
+}
